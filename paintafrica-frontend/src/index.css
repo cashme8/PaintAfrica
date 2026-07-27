@@ -1,0 +1,122 @@
+@import "tailwindcss";
+
+/*
+  PaintAfrica design tokens
+  ---------------------------------------------------------------
+  Grounded in the print-production world this product serves:
+  job tickets, ink swatches, uncoated stock, crop marks.
+
+  ink      -> deep confident indigo ink, display type & primary actions
+  stock    -> cool uncoated-paper off-white, the "canvas" of the app
+  marigold -> a bold ink-swatch accent, used sparingly for calls to action
+  press    -> print-red, used for alerts / rejected / urgent states
+  proof    -> teal-green, used for success / approved / completed states
+  carbon   -> near-black body text, like carbon-copy ink
+*/
+@theme {
+  --color-ink-50: #eef0fb;
+  --color-ink-100: #d6dbf3;
+  --color-ink-300: #7583d6;
+  --color-ink-500: #33409e;
+  --color-ink-600: #202b6b;
+  --color-ink-700: #181f50;
+  --color-ink-900: #0d1130;
+
+  --color-stock-50: #fbfaf8;
+  --color-stock-100: #f2f1ed;
+  --color-stock-200: #e7e5de;
+  --color-stock-300: #d6d3c8;
+
+  --color-marigold-400: #f0b054;
+  --color-marigold-500: #e8a33d;
+  --color-marigold-600: #c9822a;
+
+  --color-press-500: #d64545;
+  --color-press-600: #b73434;
+
+  --color-proof-500: #1f8a70;
+  --color-proof-600: #17705a;
+
+  --color-carbon-500: #4a4c58;
+  --color-carbon-700: #26283a;
+  --color-carbon-900: #14161f;
+
+  --font-display: "Space Grotesk", "Segoe UI", sans-serif;
+  --font-body: "Inter", "Segoe UI", sans-serif;
+  --font-mono: "IBM Plex Mono", ui-monospace, monospace;
+}
+
+@layer base {
+  html {
+    font-family: var(--font-body);
+    color: var(--color-carbon-900);
+    background-color: var(--color-stock-100);
+  }
+
+  h1, h2, h3, h4 {
+    font-family: var(--font-display);
+    letter-spacing: -0.01em;
+  }
+
+  ::selection {
+    background-color: var(--color-marigold-400);
+    color: var(--color-ink-900);
+  }
+
+  :focus-visible {
+    outline: 2px solid var(--color-ink-600);
+    outline-offset: 2px;
+  }
+}
+
+@layer components {
+  /*
+    Signature element: "crop marks" on cards, echoing the corner
+    registration marks printers use to align a print run. Appears
+    on hover to reward attention rather than shouting on load.
+  */
+  .crop-card {
+    position: relative;
+  }
+
+  .crop-card::before,
+  .crop-card::after {
+    content: "";
+    position: absolute;
+    width: 14px;
+    height: 14px;
+    border-color: var(--color-ink-600);
+    opacity: 0;
+    transition: opacity 150ms ease;
+    pointer-events: none;
+  }
+
+  .crop-card::before {
+    top: -1px;
+    left: -1px;
+    border-top: 2px solid;
+    border-left: 2px solid;
+  }
+
+  .crop-card::after {
+    bottom: -1px;
+    right: -1px;
+    border-bottom: 2px solid;
+    border-right: 2px solid;
+  }
+
+  .crop-card:hover::before,
+  .crop-card:hover::after {
+    opacity: 1;
+  }
+
+  .job-number {
+    font-family: var(--font-mono);
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+  }
+
+  .dashed-rule {
+    border-top: 1.5px dashed var(--color-stock-300);
+  }
+}
