@@ -5,6 +5,7 @@ import CropCard from "../../components/common/CropCard";
 import StatusBadge from "../../components/common/StatusBadge";
 import Button from "../../components/common/Button";
 import { mockOrders } from "../../lib/mockData";
+import { formatFRW } from "../../lib/formatCurrency";
 import { ordersApi } from "../../api/endpoints/orders.api";
 
 export default function MyOrders() {
@@ -63,8 +64,18 @@ export default function MyOrders() {
               <div className="flex items-center gap-4 sm:flex-col sm:items-end sm:gap-2">
                 <StatusBadge status={o.status} />
                 <p className="job-number text-sm font-semibold text-ink-600">
-                  UGX {o.quotedAmount.toLocaleString()}
+                  {formatFRW(o.quotedAmount)}
                 </p>
+                {o.quote_file_url && (
+                  <a
+                    href={o.quote_file_url}
+                    target="_blank"
+                    rel="noreferrer"
+                    className="text-xs text-ink-600 hover:underline"
+                  >
+                    View quote (PDF)
+                  </a>
+                )}
               </div>
             </CropCard>
           ))}

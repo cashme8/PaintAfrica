@@ -111,7 +111,7 @@ export default function Home() {
             <div className="dashed-rule mt-6 pt-4">
               <div className="flex items-center justify-between">
                 <span className="text-sm text-carbon-500">Quoted amount</span>
-                <span className="job-number text-sm font-semibold text-ink-600">UGX 185,000</span>
+                <span className="job-number text-sm font-semibold text-ink-600">{formatFRW(185000)}</span>
               </div>
             </div>
           </CropCard>

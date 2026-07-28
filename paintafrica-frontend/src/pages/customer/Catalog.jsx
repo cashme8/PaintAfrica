@@ -4,6 +4,7 @@ import { Search, MapPin } from "lucide-react";
 import CropCard from "../../components/common/CropCard";
 import Button from "../../components/common/Button";
 import { mockServices, categories } from "../../lib/mockData";
+import { formatFRW } from "../../lib/formatCurrency";
 import { servicesApi } from "../../api/endpoints/services.api";
 
 export default function Catalog() {
@@ -108,7 +109,7 @@ export default function Catalog() {
                   <div>
                     <p className="text-xs text-carbon-500">From</p>
                     <p className="job-number text-sm font-semibold text-ink-600">
-                      UGX {s.startingPrice.toLocaleString()} <span className="font-normal text-carbon-500">/ {s.priceUnit}</span>
+                      {formatFRW(s.startingPrice)} <span className="font-normal text-carbon-500">/ {s.priceUnit}</span>
                     </p>
                   </div>
                   <Button size="sm" onClick={() => navigate(`/order/new?service=${s.id}`)}>

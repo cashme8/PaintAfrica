@@ -4,6 +4,7 @@ import StatusBadge from "../../components/common/StatusBadge";
 import Button from "../../components/common/Button";
 import { useAuth } from "../../auth/AuthContext";
 import { ordersApi } from "../../api/endpoints/orders.api";
+import { supabase } from "../../lib/supabaseClient";
 
 const incomingOrders = [
   {
@@ -39,6 +40,7 @@ export default function Dashboard() {
   const { user } = useAuth();
   const [orders, setOrders] = useState([]);
   const [quoteDrafts, setQuoteDrafts] = useState({});
+  const [fileDrafts, setFileDrafts] = useState({});
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
 
@@ -56,10 +58,26 @@ export default function Dashboard() {
   async function sendQuote(id) {
     const amount = quoteDrafts[id];
     if (!amount) return;
+    setError("");
     try {
-      await ordersApi.sendQuote(id, Number(amount));
-      setOrders((prev) => prev.map((o) => (o.id === id ? { ...o, status: "quoted" } : o)));
+      let fileUrl = null;
+      const file = fileDrafts[id];
+      if (file) {
+        // validate pdf
+        if (file.type !== "application/pdf") throw new Error("Only PDF quotes are accepted.");
+        const path = `quotes/${id}/${Date.now()}_${file.name}`;
+        const { error: upErr } = await supabase.storage.from("quotes").upload(path, file, {
+          contentType: file.type,
+        });
+        if (upErr) throw upErr;
+        const { data } = supabase.storage.from("quotes").getPublicUrl(path);
+        fileUrl = data.publicUrl;
+      }
+
+      await ordersApi.sendQuote(id, Number(amount), fileUrl);
+      setOrders((prev) => prev.map((o) => (o.id === id ? { ...o, status: "quoted", quote_file_url: fileUrl, quotedAmount: Number(amount) } : o)));
       setQuoteDrafts((d) => ({ ...d, [id]: "" }));
+      setFileDrafts((d) => ({ ...d, [id]: null }));
     } catch (err) {
       setError(err.message || "Could not send quote");
     }
@@ -120,11 +138,27 @@ export default function Dashboard() {
                   <div className="flex flex-col gap-2 sm:flex-row sm:items-center">
                     <input
                       type="number"
-                      placeholder="Quote amount (UGX)"
+                      placeholder="Quote amount (FRW)"
                       value={quoteDrafts[o.id] ?? ""}
                       onChange={(e) => setQuoteDrafts((d) => ({ ...d, [o.id]: e.target.value }))}
                       className="w-full rounded-sm border border-stock-300 bg-stock-50 px-3 py-2 text-sm outline-none focus:border-ink-600 sm:w-48"
                     />
+                    <label className="flex items-center gap-2">
+                      <input
+                        type="file"
+                        accept="application/pdf"
+                        onChange={(e) => setFileDrafts((d) => ({ ...d, [o.id]: e.target.files[0] }))}
+                        className="hidden"
+                        id={`file-${o.id}`}
+                      />
+                      <span className="text-sm text-carbon-500">Attach PDF quote</span>
+                      <input
+                        type="button"
+                        value="Choose file"
+                        onClick={() => document.getElementById(`file-${o.id}`).click()}
+                        className="rounded-sm border px-3 py-1 text-sm"
+                      />
+                    </label>
                     <div className="flex gap-2">
                       <Button size="sm" onClick={() => sendQuote(o.id)}>
                         Send quote
@@ -137,7 +171,14 @@ export default function Dashboard() {
                 )}
 
                 {o.status === "quoted" && (
-                  <p className="text-xs text-carbon-500">Waiting on the customer to confirm your quote.</p>
+                    <div>
+                      <p className="text-xs text-carbon-500">Waiting on the customer to confirm your quote.</p>
+                      {o.quote_file_url && (
+                        <a href={o.quote_file_url} target="_blank" rel="noreferrer" className="text-sm text-ink-600 hover:underline">
+                          View uploaded quote (PDF)
+                        </a>
+                      )}
+                    </div>
                 )}
 
                 {(o.status === "accepted" || o.status === "in_production") && (
