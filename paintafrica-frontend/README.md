@@ -30,13 +30,23 @@ The app runs at `http://localhost:5173`.
 | Axios client + JWT interceptors | ✅ Complete — attaches JWT to all requests |
 | API Integration | ✅ Complete with fallback to mock data |
 | Customer: Catalog, Order Form, My Orders | ✅ Complete — connected to `servicesApi` & `ordersApi` |
-| Business: Dashboard (incoming orders, quotes, status) | ✅ Complete — connected to `ordersApi` |
+| Business: Dashboard (incoming orders, quotes, status, PDF quote upload) | ✅ Complete — connected to `ordersApi` |
 | Designer: Portfolio (profile, design requests) | ✅ Complete — connected to `designsApi` |
 | Admin: User/Business Management | ✅ Complete — connected to `usersApi` |
 | Home, How It Works, Not Found pages | ✅ Complete |
 | Toast notification system | ✅ Complete — global error/success messaging |
 
 All pages have real API integration with graceful fallback to mock data if the backend is unavailable.
+
+## PDF quote flow
+
+- Business users can attach a PDF quote from the Business Dashboard when responding to a pending order.
+- The PDF is uploaded to Supabase Storage in a bucket named `quotes`.
+- The app sends the uploaded file URL to the backend as `file_url` in `PATCH /orders/:id/quote`.
+- Customers can open the uploaded PDF from `My Orders`.
+- The Business Dashboard also shows a link to the uploaded PDF once the quote is sent.
+
+Make sure the `quotes` bucket exists in Supabase and that uploads are allowed for your configured auth rules.
 
 ## Project structure
 
@@ -90,4 +100,5 @@ to guard role-specific pages — see `src/routes/AppRoutes.jsx`.
 1. Create a Supabase project, run the SQL migration from
    `docs/04-DATABASE-ERD.md`, and drop your project URL/anon key into `.env`.
 2. Build the Express backend (Phase 3) following `docs/03-ARCHITECTURE.md`.
-3. Replace the mock data calls (see `// TODO:` comments) with real API calls.
+3. Update the backend quote endpoint to persist `file_url`/`quote_file_url`.
+4. Replace the remaining mock data calls (see `// TODO:` comments) with real API calls.

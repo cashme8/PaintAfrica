@@ -66,6 +66,9 @@ export default function MyOrders() {
                 <p className="job-number text-sm font-semibold text-ink-600">
                   {formatFRW(o.quotedAmount)}
                 </p>
+                <Link to={`/orders/${o.id}/chat`}>
+                  <Button variant="ghost" size="sm">Chat</Button>
+                </Link>
                 {o.quote_file_url && (
                   <a
                     href={o.quote_file_url}

@@ -9,6 +9,7 @@ import Register from "../pages/customer/Register";
 import Catalog from "../pages/customer/Catalog";
 import OrderForm from "../pages/customer/OrderForm";
 import MyOrders from "../pages/customer/MyOrders";
+import Chat from "../pages/customer/Chat";
 import BusinessDashboard from "../pages/business/Dashboard";
 import DesignerPortfolio from "../pages/designer/Portfolio";
 import AdminUsers from "../pages/admin/Users";
@@ -39,6 +40,14 @@ export default function AppRoutes() {
           element={
             <ProtectedRoute roles={["customer"]}>
               <MyOrders />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/orders/:orderId/chat"
+          element={
+            <ProtectedRoute roles={["customer", "business"]}>
+              <Chat />
             </ProtectedRoute>
           }
         />

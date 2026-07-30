@@ -5,6 +5,7 @@ import Button from "../../components/common/Button";
 import { useAuth } from "../../auth/AuthContext";
 import { ordersApi } from "../../api/endpoints/orders.api";
 import { supabase } from "../../lib/supabaseClient";
+import { Link } from "react-router-dom";
 
 const incomingOrders = [
   {
@@ -178,6 +179,11 @@ export default function Dashboard() {
                           View uploaded quote (PDF)
                         </a>
                       )}
+                      <div className="mt-2">
+                        <Link to={`/orders/${o.id}/chat`}>
+                          <Button variant="ghost" size="sm">Open chat</Button>
+                        </Link>
+                      </div>
                     </div>
                 )}
 
@@ -194,6 +200,9 @@ export default function Dashboard() {
                     <Button size="sm" onClick={() => updateStatus(o.id, "ready")}>
                       Mark ready
                     </Button>
+                    <Link to={`/orders/${o.id}/chat`}>
+                      <Button variant="ghost" size="sm">Chat</Button>
+                    </Link>
                   </div>
                 )}
               </div>
