@@ -14,6 +14,7 @@ import {
 } from "lucide-react";
 import CropCard from "../../components/common/CropCard";
 import Button from "../../components/common/Button";
+import { formatFRW } from "../../lib/formatCurrency";
 
 const categories = [
   { name: "Flyers", icon: FileText },

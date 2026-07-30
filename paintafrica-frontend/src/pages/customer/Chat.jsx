@@ -6,26 +6,7 @@ import { mockChats } from "../../lib/chatData";
 import { useAuth } from "../../auth/AuthContext";
 
 export default function Chat() {
-  const { orderId } = useParams();Quiz 2 UML and Software TestingBackend: Render or Railway — my pick is Render
-
-Both were listed as options in your original brief, and both work fine for an Express + Node backend. Here's how I'd decide between them for PaintAfrica specifically:
-
-	Render	Railway
-Free tier	Yes, but free services spin down after inactivity (cold starts, ~30-60s delay on first request after idle)	Free tier is usage-based credit ($5/month free), no spin-down, but credit runs out faster under load
-Setup simplicity	Very simple — connect repo, set build/start commands, done	Similarly simple
-Predictability	Free tier behavior is well understood, good docs	Pricing/credits can be less predictable to reason about early on
-Good fit for MVP demo	Yes — occasional cold start delay is a fair tradeoff for $0 while you're still building/testing	Also fine, just watch usage credits
-
-My recommendation: Render, mainly because its free-tier behavior is simpler to reason about while you're still in build-and-test mode, and it's a very common pairing with Vercel + Supabase in tutorials, so you'll find plenty of help if you hit snags.
-
-Database & Auth: Already on Supabase ✅
-
-No separate deployment step needed — Supabase is already hosted; you just point both Vercel and Render at the same Supabase project via environment variables.
-
-Putting it together once we build the backend
-Vercel (frontend)  →  Render (Express backend)  →  Supabase (Postgres + Auth + Storage)
-
-All three read the same Supabase project, just via different env vars set in each platform's dashboard.
+  const { orderId } = useParams();
   const { user, role } = useAuth();
   const [draft, setDraft] = useState("");
   const [threads, setThreads] = useState(mockChats);

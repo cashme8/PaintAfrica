@@ -3,6 +3,14 @@ import { supabase } from "../lib/supabaseClient";
 
 const AuthContext = createContext(undefined);
 
+function getSupabaseSession() {
+  if (!supabase || typeof supabase.auth?.getSession !== "function") {
+    return Promise.resolve({ data: { session: null } });
+  }
+
+  return supabase.auth.getSession();
+}
+
 /**
  * Wraps Supabase auth session state and exposes it to the app.
  * `profile.role` (customer | business | designer | admin) drives
@@ -14,22 +22,42 @@ export function AuthProvider({ children }) {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    supabase.auth.getSession().then(({ data }) => {
-      setSession(data.session);
-      setLoading(false);
+    let isMounted = true;
+
+    getSupabaseSession().then(({ data }) => {
+      if (isMounted) {
+        setSession(data.session);
+        setLoading(false);
+      }
     });
+
+    if (!supabase || typeof supabase.auth?.onAuthStateChange !== "function") {
+      if (isMounted) setLoading(false);
+      return () => {
+        isMounted = false;
+      };
+    }
 
     const { data: listener } = supabase.auth.onAuthStateChange((_event, newSession) => {
-      setSession(newSession);
+      if (isMounted) {
+        setSession(newSession);
+      }
     });
 
-    return () => listener.subscription.unsubscribe();
+    return () => {
+      isMounted = false;
+      listener.subscription.unsubscribe();
+    };
   }, []);
 
   const user = session?.user ?? null;
   const role = user?.user_metadata?.role ?? null;
 
   async function register({ email, password, fullName, role }) {
+    if (!supabase || typeof supabase.auth?.signUp !== "function") {
+      throw new Error("Authentication is not configured yet.");
+    }
+
     const { data, error } = await supabase.auth.signUp({
       email,
       password,
@@ -42,12 +70,20 @@ export function AuthProvider({ children }) {
   }
 
   async function login({ email, password }) {
+    if (!supabase || typeof supabase.auth?.signInWithPassword !== "function") {
+      throw new Error("Authentication is not configured yet.");
+    }
+
     const { data, error } = await supabase.auth.signInWithPassword({ email, password });
     if (error) throw error;
     return data;
   }
 
   async function logout() {
+    if (!supabase || typeof supabase.auth?.signOut !== "function") {
+      return;
+    }
+
     const { error } = await supabase.auth.signOut();
     if (error) throw error;
   }
