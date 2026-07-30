@@ -129,8 +129,12 @@ function createSupabaseRepository() {
 export function createApp({ repository } = {}) {
   const app = express();
   const ordersRepository = repository ?? createSupabaseRepository();
+  const allowedOrigins = (process.env.CORS_ORIGIN || "http://localhost:5173")
+    .split(",")
+    .map((origin) => origin.trim())
+    .filter(Boolean);
 
-  app.use(cors({ origin: true }));
+  app.use(cors({ origin: allowedOrigins, credentials: true }));
   app.use(express.json());
 
   app.get("/health", (_req, res) => {

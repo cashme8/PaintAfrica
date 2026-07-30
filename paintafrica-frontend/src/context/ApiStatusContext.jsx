@@ -4,7 +4,8 @@ import axios from "axios";
 const ApiStatusContext = createContext(null);
 
 export function ApiStatusProvider({ children }) {
-  const [status, setStatus] = useState({ connected: false, checked: false, baseUrl: import.meta.env.VITE_API_BASE_URL || "http://localhost:4000/api/v1" });
+  const baseUrl = (import.meta.env.VITE_API_BASE_URL || "http://localhost:4000/api/v1").replace(/\/$/, "");
+  const [status, setStatus] = useState({ connected: false, checked: false, baseUrl });
 
   useEffect(() => {
     let mounted = true;
