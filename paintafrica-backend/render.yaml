@@ -8,9 +8,9 @@ services:
     envVars:
       - key: PORT
         value: 10000
-      - key: https://aftutevsaohrfdnmeuyq.supabase.co/rest/v1/
-        sync: false
-      - key: sb_publishable_eplMkNxq8YSCvpdWXup33Q_7p8rHeK6
+      - key: SUPABASE_URL
+        value: https://aftutesaohrfdnmeuyq.supabase.co
+      - key: SUPABASE_SERVICE_ROLE_KEY
         sync: false
       - key: CORS_ORIGIN
-        value: http://localhost:5173,https://your-frontend-deployed-url.vercel.app
+        value: http://localhost:5173,https://paintafrica.vercel.app
